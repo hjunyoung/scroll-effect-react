@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import GlobalStyle from './GlobalStyle';
 
 import Header from './Header';
@@ -14,6 +14,19 @@ const App = () => {
   const secondPage = useRef();
   const thirdPage = useRef();
   const fourthPage = useRef();
+
+  // Make the page scroll to top when refreshed.
+  useEffect(() => {
+    window.addEventListener('beforeunload', () => {
+      window.scrollTo(0, 0);
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', () => {
+        window.scrollTo(0, 0);
+      });
+    };
+  });
 
   const pageRefs = [firstPage, secondPage, thirdPage, fourthPage];
 
