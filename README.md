@@ -230,3 +230,55 @@ const Pages = ({ headerHeight, backgroundColors, pageRefs }) => {
   );
 };
 ```
+
+## 🚨Issues
+
+### [(✅Solved) Bug: Can scroll beyond the body when the browser's height is small](https://github.com/hjunyoung/scroll-effect-react/issues/1)
+
+#### Bug example
+
+![Navigation click](./README_ASSETS/ScrollBug.gif)
+
+#### How I solved this bug.
+
+I just hide the quick menu, if the screen height is small.
+
+```js
+// App.js
+const headerHeight = 80;
+
+const App = () => {
+  const [quickMenuVisibility, setQuickMenuVisibility] = useState(
+    window.innerHeight > quickMenuHeight
+  );
+  ...
+
+  // Make the page scroll to top when refreshed.
+  useEffect(() => {
+    window.addEventListener('beforeunload', () => {
+      window.scrollTo(0, 0);
+    });
+    window.addEventListener('resize', () => {
+      setQuickMenuVisibility(window.innerHeight > quickMenuHeight);
+    });
+
+    return () => {
+      window.removeEventListener('beforeunload', () => {
+        window.scrollTo(0, 0);
+      });
+      window.removeEventListener('resize', () => {
+        setQuickMenuVisibility(window.innerHeight > quickMenuHeight);
+      });
+    };
+  }, []);
+
+  ...
+
+  return (
+    <>
+      ...
+      {quickMenuVisibility && <QuickMenu quickMenuHeight={quickMenuHeight} />}
+    </>
+  );
+};
+```
