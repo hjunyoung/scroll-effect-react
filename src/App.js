@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import GlobalStyle from './GlobalStyle';
 
 import Header from './Header';
@@ -7,9 +7,13 @@ import ScrollToTop from './ScrollToTop';
 import QuickMenu from './QuickMenu';
 
 const headerHeight = 80;
+const quickMenuHeight = 360;
 const backgroundColors = ['#c49797', '#b6c497', '#97c4c1', '#aa97c4'];
 
 const App = () => {
+  const [quickMenuVisibility, setQuickMenuVisibility] = useState(
+    window.innerHeight > quickMenuHeight
+  );
   const firstPage = useRef();
   const secondPage = useRef();
   const thirdPage = useRef();
@@ -20,13 +24,19 @@ const App = () => {
     window.addEventListener('beforeunload', () => {
       window.scrollTo(0, 0);
     });
+    window.addEventListener('resize', () => {
+      setQuickMenuVisibility(window.innerHeight > quickMenuHeight);
+    });
 
     return () => {
       window.removeEventListener('beforeunload', () => {
         window.scrollTo(0, 0);
       });
+      window.removeEventListener('resize', () => {
+        setQuickMenuVisibility(window.innerHeight > quickMenuHeight);
+      });
     };
-  });
+  }, []);
 
   const pageRefs = [firstPage, secondPage, thirdPage, fourthPage];
 
@@ -44,7 +54,7 @@ const App = () => {
         pageRefs={pageRefs}
       />
       <ScrollToTop />
-      <QuickMenu />
+      {quickMenuVisibility && <QuickMenu quickMenuHeight={quickMenuHeight} />}
     </>
   );
 };

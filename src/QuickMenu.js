@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-const menuHeight = 360;
 const menuMargin = 48;
 
 const Container = styled.article.attrs((props) => ({
@@ -18,7 +17,7 @@ const Container = styled.article.attrs((props) => ({
   top: 0;
 
   width: 88px;
-  height: ${menuHeight}px;
+  height: ${(props) => props.quickMenuHeight}px;
 
   background-color: #cfb593;
   font-size: 40px;
@@ -31,15 +30,15 @@ const Container = styled.article.attrs((props) => ({
   transition: transform 0.2s linear;
 `;
 
-const QuickMenu = () => {
+const QuickMenu = ({ quickMenuHeight }) => {
   const windowHeight = window.innerHeight;
-  const initialOffset = windowHeight - (menuHeight + menuMargin);
+  const initialOffset = windowHeight - (quickMenuHeight + menuMargin);
   const [topOffset, setTopOffset] = useState(initialOffset);
 
   useEffect(() => {
     const moveQuickMenu = () => {
       const scroll = window.scrollY;
-      let offset = scroll + (windowHeight - menuHeight) / 2;
+      let offset = scroll + (windowHeight - quickMenuHeight) / 2;
 
       if (scroll < windowHeight / 2) {
         offset = initialOffset;
@@ -51,10 +50,10 @@ const QuickMenu = () => {
     window.addEventListener('scroll', moveQuickMenu);
 
     return () => window.removeEventListener('scroll', moveQuickMenu);
-  }, [initialOffset, windowHeight]);
+  }, [initialOffset, windowHeight, quickMenuHeight]);
 
   return (
-    <Container topOffset={topOffset}>
+    <Container topOffset={topOffset} quickMenuHeight={quickMenuHeight}>
       <span>Quick Menu</span>
     </Container>
   );
