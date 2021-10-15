@@ -1,70 +1,232 @@
-# Getting Started with Create React App
+# React scroll event
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 💻Stack
 
-## Available Scripts
+- react
+- styled-components
 
-In the project directory, you can run:
+## Overview
 
-### `npm start`
+When you surf the Internet, you can easily find some website that react to mouse scroll events. In this project, I practiced react by creating webpage that changes in response to user scroll.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Following are features this webpage has.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. [A Scroll-to-Top button](#scroll-to-top-button)
+2. [A quick menu which follows the user](#quick-menu)
+3. [A navigation bar that knows which content is currently displaying](#navigation-bar)
 
-### `npm test`
+## ✨Scroll-to-Top Button
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<div align="center">
+  <img src="./README_ASSETS/ScrollToTopButton.gif" alt="Scroll-to-Top button">
+</div>
 
-### `npm run build`
+- I added an onClick event handler to the button component, and used a **window.scrollTo** function to scroll to the top of the page when clicking this button. In the scrollTo funtion, we can use a **behavior parameter** to specify whether the scrolling animate smoothly or not.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```js
+// ScrollToTop.js
+const ScrollToTop = () => {
+  return (
+    <Container onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+      <FontAwesomeIcon icon={faArrowCircleUp} />
+    </Container>
+  );
+};
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- At first (when window.scrollY is 0), I hid the Scroll-to-Top button from the users. And if a user scrolls and window.scrollY value exceed 400px, I made the button come into sight.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```js
+// ScrollToTop.js
+const Container = styled.button`
+  ...
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+  ${(props) =>
+    props.visible
+      ? css`
+          opacity: 0.7;
+          transform: translateY(0);
+        `
+      : css`
+          opacity: 0;
+          transform: translateY(80px);
+        `}
+`;
 
-### `npm run eject`
+const ScrollToTop = () => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 400) {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
+    };
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+    window.addEventListener('scroll', toggleVisibility);
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  return (
+    <Container
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      visible={visible}
+    >
+      <FontAwesomeIcon icon={faArrowCircleUp} />
+    </Container>
+  );
+};
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## ✨Quick Menu
 
-## Learn More
+![Quick menu](./README_ASSETS/QuickMenu.gif)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- When the page is loaded or reloaded, the quick menu is located at the bottom-right corner of the browser. If a user scrolls to some point (where a value of window.scrollY > window.innerHeight / 2), the quick menu is located at the middle-right of the brower.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```js
+// QuickMenu.js
+const menuHeight = 360;
+const menuMargin = 48;
 
-### Code Splitting
+...
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+const QuickMenu = () => {
+  const windowHeight = window.innerHeight;
+  const initialOffset = windowHeight - (menuHeight + menuMargin);
+  const [topOffset, setTopOffset] = useState(initialOffset);
 
-### Analyzing the Bundle Size
+  useEffect(() => {
+    const moveQuickMenu = () => {
+      const scroll = window.scrollY;
+      let offset = scroll + (windowHeight - menuHeight) / 2;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+      if (scroll < windowHeight / 2) {
+        offset = initialOffset;
+      }
 
-### Making a Progressive Web App
+      setTopOffset(offset);
+    };
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+    window.addEventListener('scroll', moveQuickMenu);
 
-### Advanced Configuration
+    return () => window.removeEventListener('scroll', moveQuickMenu);
+  }, [initialOffset, windowHeight]);
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+  ...
+};
+```
 
-### Deployment
+![Quick menu description](./README_ASSETS/QuickMenuDescription.jpg)
+White Box is for the document | Green Box is for the winow | Red Box is for the quick menu
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## ✨Navigation Bar
 
-### `npm run build` fails to minify
+![Navigation scroll](./README_ASSETS/NavScroll.gif)
+Navigation changes as a user scrolls.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+![Navigation click](./README_ASSETS/NavClick.gif)
+Page changes as a user click on a navigation menu.
+
+- When a user scrolls, the navigation bar is aware of which page is currently displayed and highlight a menu representing that page with a page's background color. Also, if a user click a menu, window scrolls to show a corresponding page.
+
+- First, I passed color array and pageRefs to Header and Pages components from the App component.
+
+```js
+// App.js
+const backgroundColors = ['#c49797', '#b6c497', '#97c4c1', '#aa97c4'];
+
+const App = () => {
+  const firstPage = useRef();
+  const secondPage = useRef();
+  const thirdPage = useRef();
+  const fourthPage = useRef();
+
+  const pageRefs = [firstPage, secondPage, thirdPage, fourthPage];
+
+  return (
+    <>
+      <Header
+        headerHeight={headerHeight}
+        backgroundColors={backgroundColors}
+        pageRefs={pageRefs}
+      />
+      <Pages
+        headerHeight={headerHeight}
+        backgroundColors={backgroundColors}
+        pageRefs={pageRefs}
+      />
+    </>
+  );
+};
+```
+
+- Next, in the Header.js and Pages.js I used the refs to connect pages with menus.
+
+```js
+// Header.js
+...
+const Menu = styled.button`
+  ...
+  &.selected {
+    font-size: 1.05em;
+    color: ${(props) => props.color};
+  }
+`;
+
+const Header = ({ headerHeight, backgroundColors, pageRefs }) => {
+  ...
+  const scrollToPage = (index) => {
+    let topOffset = pageRefs[index].current.offsetTop;
+    window.scrollTo({ top: topOffset, behavior: 'smooth' });
+  };
+
+  return (
+    <Container headerHeight={headerHeight}>
+      ...
+      <Navigation>
+        <ul>
+          {navItem.map((item, index) => {
+            const className = index === menuIndex ? 'selected' : '';
+
+            return (
+              <div key={index}>
+                <Menu
+                  onClick={() => scrollToPage(index)}
+                  className={className}
+                  color={backgroundColors[index]}
+                >
+                  {item}
+                </Menu>
+              </div>
+            );
+          })}
+        </ul>
+      </Navigation>
+    </Container>
+  );
+```
+
+```js
+// Pages.js
+const Pages = ({ headerHeight, backgroundColors, pageRefs }) => {
+  return (
+    <Container headerHeight={headerHeight}>
+      <RecommendedItems ref={pageRefs[0]} backgroundColor={backgroundColors[0]}>
+        Recommended Items
+      </RecommendedItems>
+      <BestItems ref={pageRefs[1]} backgroundColor={backgroundColors[1]}>
+        Best Items
+      </BestItems>
+      <About ref={pageRefs[2]} backgroundColor={backgroundColors[2]}>
+        About
+      </About>
+      <Contact ref={pageRefs[3]} backgroundColor={backgroundColors[3]}>
+        Contact
+      </Contact>
+    </Container>
+  );
+};
+```
