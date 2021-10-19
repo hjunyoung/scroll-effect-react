@@ -31,12 +31,12 @@ const Container = styled.article.attrs((props) => ({
 `;
 
 const QuickMenu = ({ quickMenuHeight }) => {
-  const windowHeight = window.innerHeight;
-  const initialOffset = windowHeight - (quickMenuHeight + menuMargin);
+  const initialOffset = window.innerHeight - (quickMenuHeight + menuMargin);
   const [topOffset, setTopOffset] = useState(initialOffset);
 
   useEffect(() => {
     const moveQuickMenu = () => {
+      const windowHeight = window.innerHeight;
       const scroll = window.scrollY;
       let offset = scroll + (windowHeight - quickMenuHeight) / 2;
 
@@ -48,9 +48,13 @@ const QuickMenu = ({ quickMenuHeight }) => {
     };
 
     window.addEventListener('scroll', moveQuickMenu);
+    window.addEventListener('resize', moveQuickMenu);
 
-    return () => window.removeEventListener('scroll', moveQuickMenu);
-  }, [initialOffset, windowHeight, quickMenuHeight]);
+    return () => {
+      window.removeEventListener('scroll', moveQuickMenu);
+      window.removeEventListener('resize', moveQuickMenu);
+    };
+  }, [initialOffset, quickMenuHeight]);
 
   return (
     <Container topOffset={topOffset} quickMenuHeight={quickMenuHeight}>
