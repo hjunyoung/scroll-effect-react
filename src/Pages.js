@@ -16,6 +16,15 @@ const Page = styled.section`
   background-color: ${(props) => props.backgroundColor};
 
   font-size: 60px;
+  text-align: center;
+
+  @media screen and (max-width: 768px) {
+    font-size: 48px;
+  }
+
+  @media screen and (max-width: 576px) {
+    font-size: 40px;
+  }
 `;
 
 const RecommendedItems = styled(Page)`

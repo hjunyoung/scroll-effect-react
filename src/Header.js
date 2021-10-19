@@ -11,17 +11,28 @@ const Container = styled.header`
   z-index: 10;
 
   width: 100%;
+  min-width: 360px;
   height: ${(props) => props.headerHeight}px;
   padding: 0 32px;
 
   background-color: #565656;
 
   border-bottom: 1px solid #494949;
+
+  @media screen and (max-width: 992px) {
+    justify-content: center;
+  }
 `;
 
 const Logo = styled.article`
   font-size: 32px;
   font-weight: 700;
+
+  text-align: center;
+
+  @media screen and (max-width: 768px) {
+    font-size: 24px;
+  }
 `;
 
 const Navigation = styled.nav`
@@ -35,15 +46,20 @@ const Navigation = styled.nav`
 
     height: 100%;
   }
+
+  @media screen and (max-width: 992px) {
+    display: none;
+  }
 `;
 
 const Menu = styled.button`
+  font-size: 16px;
   font-weight: 700;
   line-height: 1;
   transition: font-size 0.5s ease-in-out, color 0.5s ease-in-out;
 
   &.selected {
-    font-size: 1.05em;
+    font-size: 18px;
     color: ${(props) => props.color};
   }
 `;

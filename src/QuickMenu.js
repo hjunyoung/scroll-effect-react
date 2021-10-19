@@ -28,6 +28,10 @@ const Container = styled.article.attrs((props) => ({
 
   will-change: transform;
   transition: transform 0.2s linear;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const QuickMenu = ({ quickMenuHeight }) => {
